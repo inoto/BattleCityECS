@@ -1,5 +1,6 @@
 ﻿using Morpeh;
 using Morpeh.Globals;
+using SimpleBattleCity;
 using UnityEngine;
 using Unity.IL2CPP.CompilerServices;
 
@@ -32,8 +33,7 @@ public sealed class EagleSystem : UpdateSystem
 
             if (health.Health <= 0)
             {
-                Debug.Log("eagle health 0");
-                GameOverEvent.Publish(owner.Player);
+                GameController.Instance.EagleDiedSinglePlayer(owner.Player == 1 ? 2 : 1);
             }
         }
     }

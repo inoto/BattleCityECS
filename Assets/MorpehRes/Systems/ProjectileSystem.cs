@@ -2,7 +2,6 @@
 using Morpeh.Globals;
 using UnityEngine;
 using Unity.IL2CPP.CompilerServices;
-using UnityEditor.Events;
 
 [Il2CppSetOption(Option.NullChecks, false)]
 [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
@@ -10,8 +9,6 @@ using UnityEditor.Events;
 [CreateAssetMenu(menuName = "ECS/Systems/" + nameof(ProjectileSystem))]
 public sealed class ProjectileSystem : UpdateSystem
 {
-    public GlobalEvent CollidedEvent;
-
     Filter fProjectiles;
 
     public override void OnAwake()
@@ -26,25 +23,9 @@ public sealed class ProjectileSystem : UpdateSystem
         foreach (var entity in fProjectiles)
         {
             ref var projectile = ref entity.GetComponent<ProjectileComponent>();
-            ref var health = ref entity.GetComponent<HealthComponent>();
-            ref var collidable = ref entity.GetComponent<CollidableComponent>();
-
-            if (!projectile.IsInitialized)
-            {
-                // projectile.CollidedEvent += OnCollidedEvent;
-                projectile.IsInitialized = true;
-            }
 
             if (projectile.LifeTimer <= projectile.LifeTime)
                 projectile.LifeTimer += deltaTime;
         }
     }
-
-    // void OnCollidedEvent(IEntity entity, GameObject go)
-    // {
-    //     ref var projectile = ref entity.GetComponent<ProjectileComponent>();
-    //     projectile.CollidedEvent -= OnCollidedEvent;
-    //     // Debug.Log("projectile collided IN SYSTEM");
-    //     World.RemoveEntity(entity);
-    // }
 }

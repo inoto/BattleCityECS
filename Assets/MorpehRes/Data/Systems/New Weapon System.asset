@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 432981a45f4d7b04dadbd0e29bbd4c7e, type: 3}
   m_Name: New Weapon System
   m_EditorClassIdentifier: 
+  Creator: {fileID: 11400000, guid: d3e57c4fa9a9bb047830a447601c3109, type: 2}

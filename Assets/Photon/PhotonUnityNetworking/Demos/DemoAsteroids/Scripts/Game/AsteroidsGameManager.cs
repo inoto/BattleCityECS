@@ -47,7 +47,7 @@ namespace Photon.Pun.Demo.Asteroids
 
             Hashtable props = new Hashtable
             {
-                {AsteroidsGame.PLAYER_LOADED_LEVEL, true}
+                {AsteroidsPlayerData.PLAYER_LOADED_LEVEL, true}
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
@@ -67,7 +67,7 @@ namespace Photon.Pun.Demo.Asteroids
         {
             while (true)
             {
-                yield return new WaitForSeconds(Random.Range(AsteroidsGame.ASTEROIDS_MIN_SPAWN_TIME, AsteroidsGame.ASTEROIDS_MAX_SPAWN_TIME));
+                yield return new WaitForSeconds(Random.Range(AsteroidsPlayerData.ASTEROIDS_MIN_SPAWN_TIME, AsteroidsPlayerData.ASTEROIDS_MAX_SPAWN_TIME));
 
                 Vector2 direction = Random.insideUnitCircle;
                 Vector3 position = Vector3.zero;
@@ -140,7 +140,7 @@ namespace Photon.Pun.Demo.Asteroids
 
         public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
         {
-            if (changedProps.ContainsKey(AsteroidsGame.PLAYER_LIVES))
+            if (changedProps.ContainsKey(AsteroidsPlayerData.PLAYER_LIVES))
             {
                 CheckEndOfGame();
                 return;
@@ -151,7 +151,7 @@ namespace Photon.Pun.Demo.Asteroids
                 return;
             }
 
-            if (changedProps.ContainsKey(AsteroidsGame.PLAYER_LOADED_LEVEL))
+            if (changedProps.ContainsKey(AsteroidsPlayerData.PLAYER_LOADED_LEVEL))
             {
                 if (CheckAllPlayerLoadedLevel())
                 {
@@ -188,7 +188,7 @@ namespace Photon.Pun.Demo.Asteroids
             {
                 object playerLoadedLevel;
 
-                if (p.CustomProperties.TryGetValue(AsteroidsGame.PLAYER_LOADED_LEVEL, out playerLoadedLevel))
+                if (p.CustomProperties.TryGetValue(AsteroidsPlayerData.PLAYER_LOADED_LEVEL, out playerLoadedLevel))
                 {
                     if ((bool) playerLoadedLevel)
                     {
@@ -209,7 +209,7 @@ namespace Photon.Pun.Demo.Asteroids
             foreach (Player p in PhotonNetwork.PlayerList)
             {
                 object lives;
-                if (p.CustomProperties.TryGetValue(AsteroidsGame.PLAYER_LIVES, out lives))
+                if (p.CustomProperties.TryGetValue(AsteroidsPlayerData.PLAYER_LIVES, out lives))
                 {
                     if ((int) lives > 0)
                     {

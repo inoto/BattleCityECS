@@ -26,7 +26,6 @@ public sealed class ViewSystem : UpdateSystem
             if (health.Health <= 0)
             {
                 Destroy(view.Gameobject);
-                // World.RemoveEntity(entity);
             }
         }
     }

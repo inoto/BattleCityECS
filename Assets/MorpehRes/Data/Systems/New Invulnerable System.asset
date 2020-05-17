@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bc9eae6a36bb5c429c08f040202f3b3, type: 3}
-  m_Name: New AABB Initializer
+  m_Script: {fileID: 11500000, guid: 20f78534b61b7dc4285bd299eb76c328, type: 3}
+  m_Name: New Invulnerable System
   m_EditorClassIdentifier: 

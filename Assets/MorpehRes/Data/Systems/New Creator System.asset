@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e963c087dbe09e24c8e406c1ac191ddc, type: 3}
+  m_Name: New Creator System
+  m_EditorClassIdentifier: 
+  EnablePool: 0
+  ProjectilePrefab: {fileID: 1394829191191591077, guid: d3b34d961427e7f4e90f42e5827d6ccd,
+    type: 3}
+  PlayerTankPrefab: {fileID: 2128648320769979131, guid: cc70f43382c655440a58bf8c31419b78,
+    type: 3}
+  BotTankPrefab: {fileID: 6355554103362938978, guid: dd85f33ab452ff04ab772cb9a723781a,
+    type: 3}
+  PlayerTankSprites:
+  - {fileID: 4951760068935763242, guid: 1e4697fd9a809214b80d5688f559ae2a, type: 3}
+  - {fileID: -2518180581403774676, guid: 1e4697fd9a809214b80d5688f559ae2a, type: 3}
+  BotTankSprites:
+  - {fileID: -4764354555886514125, guid: 1e4697fd9a809214b80d5688f559ae2a, type: 3}
+  - {fileID: -5936394344712596718, guid: 1e4697fd9a809214b80d5688f559ae2a, type: 3}

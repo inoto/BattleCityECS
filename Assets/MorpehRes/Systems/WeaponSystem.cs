@@ -1,5 +1,7 @@
-﻿using Morpeh;
+﻿using Assets.MorpehRes.Data.Creator;
+using Morpeh;
 using Morpeh.Globals;
+using SimpleBattleCity;
 using UnityEngine;
 using Unity.IL2CPP.CompilerServices;
 
@@ -9,6 +11,7 @@ using Unity.IL2CPP.CompilerServices;
 [CreateAssetMenu(menuName = "ECS/Systems/" + nameof(WeaponSystem))]
 public sealed class WeaponSystem : UpdateSystem
 {
+    [SerializeField] CreatorSystem Creator;
     Filter fPlayers, fProjectiles, fBots;
 
     float shootTimer = 0f;
@@ -55,15 +58,12 @@ public sealed class WeaponSystem : UpdateSystem
                 {
                     weapon.ShootTimer = 0f;
 
-                    var newEntity = Instantiate(weapon.ProjectilePrefab)
-                        .GetComponent<ProjectileProvider>().Entity;
+                    var data = new CreatorProjectileData();
+                    data.Projectile.Direction = input.RotationDirection;
+                    data.Projectile.StartPosition = position.Position;
+                    data.Owner.Player = owner.Player;
 
-                    ref var projectile = ref newEntity.GetComponent<ProjectileComponent>();
-                    projectile.Direction = input.RotationDirection;
-                    projectile.StartPosition = position.Position;
-
-                    ref var projectileOwner = ref newEntity.GetComponent<OwnerComponent>();
-                    projectileOwner.Player = owner.Player;
+                    Creator.Projectiles.Enqueue(data);
                 }
             }
 
@@ -92,34 +92,17 @@ public sealed class WeaponSystem : UpdateSystem
                 {
                     weapon.ShootTimer = 0f;
 
-                    var newEntity = Instantiate(weapon.ProjectilePrefab)
-                        .GetComponent<ProjectileProvider>().Entity;
+                    var data = new CreatorProjectileData();
+                    data.Projectile.Direction = bot.RotationDirection;
+                    data.Projectile.StartPosition = position.Position;
+                    data.Owner.Player = owner.Player;
 
-                    ref var projectile = ref newEntity.GetComponent<ProjectileComponent>();
-                    projectile.Direction = bot.RotationDirection;
-                    projectile.StartPosition = position.Position;
-
-                    ref var projectileOwner = ref newEntity.GetComponent<OwnerComponent>();
-                    projectileOwner.Player = owner.Player;
+                    Creator.Projectiles.Enqueue(data);
                 }
             }
 
             if (weapon.ShootTimer <= weapon.Rate)
                 weapon.ShootTimer += deltaTime;
         }
-    }
-
-    ProjectileComponent FindFreeProjectile()
-    {
-        var projectiles = fProjectiles.Select<ProjectileComponent>();
-
-        for (int i = 0; i < fProjectiles.Length; i++)
-        {
-            ref var projectile = ref projectiles.GetComponent(i);
-
-            // if (projectile.InPool)
-            //     return projectile;
-        }
-        return new ProjectileComponent();
     }
 }

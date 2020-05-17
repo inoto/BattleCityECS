@@ -11,7 +11,7 @@ using Unity.IL2CPP.CompilerServices;
 [CreateAssetMenu(menuName = "ECS/Systems/" + nameof(CollisionSystem))]
 public sealed class CollisionSystem : UpdateSystem
 {
-    Filter fAll, fPlayerTank, fHealth, fBlocker, fProjectiles, fOthers;
+    Filter fAll, fPlayerTank, fHealth, fBlocker, fProjectiles, fSpawners;
     Filter fBlockerProjectileAndOwner, fBlockerProjectilesEnvironment, fForest, fBlockerTank, fEagle, fBots;
 
     public override void OnAwake()
@@ -60,10 +60,9 @@ public sealed class CollisionSystem : UpdateSystem
             .Without<ProjectileComponent>()
             .Without<InputComponent>();
 
-        fOthers = World.Filter
+        fSpawners = World.Filter
             .With<CollidableComponent>()
-            .Without<InputComponent>()
-            .Without<ProjectileComponent>();
+            .With<SpawnerComponent>();
 
         Init();
     }
@@ -83,7 +82,7 @@ public sealed class CollisionSystem : UpdateSystem
     public override void OnUpdate(float deltaTime)
     {
         CheckTanksAgainstBlockers();
-        // CheckHealth();
+        // CheckSpawners();
         CheckProjectiles();
         // CheckOthers();
     }
@@ -161,18 +160,18 @@ public sealed class CollisionSystem : UpdateSystem
                     continue;
             
                 ref var other = ref entityOther.GetComponent<CollidableComponent>();
-                ref var ownerOther = ref entityOther.GetComponent<OwnerComponent>();
-         
+                ref var otherOwner = ref entityOther.GetComponent<OwnerComponent>();
+
                 if (collidable.Collider.Bounds.Intersects(other.Collider.Bounds))
                 {
-                    if (!collidable.Others.Contains(other.Collider) && owner.Player != ownerOther.Player)
+                    if (!collidable.Others.Contains(other.Collider) && owner.Player != otherOwner.Player)
                     {
                         collidable.Others.Add(other.Collider);
                     }
                 }
                 else
                 {
-                    if (collidable.Others.Contains(other.Collider) && owner.Player != ownerOther.Player)
+                    if (collidable.Others.Contains(other.Collider) && owner.Player != otherOwner.Player)
                     {
                         collidable.Others.Remove(other.Collider);
                     }
@@ -227,37 +226,6 @@ public sealed class CollisionSystem : UpdateSystem
                         {
                             collidable.Others.Remove(other.Collider);
                         }
-                    }
-                }
-            }
-        }
-    }
-
-    void CheckOthers()
-    {
-        foreach (var entity in fOthers)
-        {
-            ref var collidable = ref entity.GetComponent<CollidableComponent>();
-
-            foreach (var entityOther in fAll)
-            {
-                if (entity.ID == entityOther.ID)
-                    continue;
-
-                ref var collidableOther = ref entityOther.GetComponent<CollidableComponent>();
-
-                if (collidable.Collider.Bounds.Intersects(collidableOther.Collider.Bounds))
-                {
-                    if (!collidable.Others.Contains(collidableOther.Collider))
-                    {
-                        collidable.Others.Add(collidableOther.Collider);
-                    }
-                }
-                else
-                {
-                    if (collidable.Others.Contains(collidableOther.Collider))
-                    {
-                        collidable.Others.Remove(collidableOther.Collider);
                     }
                 }
             }

@@ -9,5 +9,5 @@ using Unity.IL2CPP.CompilerServices;
 [System.Serializable]
 public struct TankTileComponent : IComponent
 {
-    public Player Player;
+    
 }

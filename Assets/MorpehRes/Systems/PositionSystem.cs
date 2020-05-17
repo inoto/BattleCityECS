@@ -32,11 +32,17 @@ public sealed class PositionSystem : UpdateSystem
             .With<ProjectileComponent>()
             .With<PositionComponent>()
             .With<MoveComponent>();
-
-        Init();
     }
 
-    void Init()
+    public override void OnUpdate(float deltaTime)
+    {
+        CheckNotInitialized();
+        UpdatePlayers(deltaTime);
+        UpdateBots(deltaTime);
+        UpdateProjectiles(deltaTime);
+    }
+
+    void CheckNotInitialized()
     {
         foreach (var entity in fAll)
         {
@@ -46,16 +52,10 @@ public sealed class PositionSystem : UpdateSystem
             if (!position.IsInitialized)
             {
                 position.Position = transform.Transform.position;
+                position.LastPosition = transform.Transform.position;
                 position.IsInitialized = true;
             }
         }
-    }
-
-    public override void OnUpdate(float deltaTime)
-    {
-        UpdatePlayers(deltaTime);
-        UpdateBots(deltaTime);
-        UpdateProjectiles(deltaTime);
     }
 
     void UpdatePlayers(float deltaTime)
@@ -63,7 +63,6 @@ public sealed class PositionSystem : UpdateSystem
         var positions = fPLayers.Select<PositionComponent>();
         var inputs = fPLayers.Select<InputComponent>();
         var moves = fPLayers.Select<MoveComponent>();
-        var collidables = fPLayers.Select<CollidableComponent>();
 
         for (int i = 0; i < fPLayers.Length; i++)
         {
@@ -73,12 +72,9 @@ public sealed class PositionSystem : UpdateSystem
 
             ref var position = ref positions.GetComponent(i);
             ref var move = ref moves.GetComponent(i);
-            ref var collidable = ref collidables.GetComponent(i);
 
             position.LastPosition = position.Position;
-            // Debug.Log($"LastPosition {position.LastPosition.ToString("F6")}");
             position.Position += input.Direction.normalized * move.Speed * deltaTime;
-            // Debug.Log($"new position {position.Position.ToString("F6")}");
         }
     }
 
@@ -87,7 +83,6 @@ public sealed class PositionSystem : UpdateSystem
         var positions = fBots.Select<PositionComponent>();
         var bots = fBots.Select<BotTankComponent>();
         var moves = fBots.Select<MoveComponent>();
-        var collidables = fBots.Select<CollidableComponent>();
 
         for (int i = 0; i < fBots.Length; i++)
         {
@@ -97,12 +92,9 @@ public sealed class PositionSystem : UpdateSystem
 
             ref var position = ref positions.GetComponent(i);
             ref var move = ref moves.GetComponent(i);
-            ref var collidable = ref collidables.GetComponent(i);
 
             position.LastPosition = position.Position;
-            // Debug.Log($"LastPosition {position.LastPosition.ToString("F6")}");
             position.Position += bot.Direction.normalized * move.Speed * deltaTime;
-            // Debug.Log($"new position {position.Position.ToString("F6")}");
         }
     }
 
@@ -118,15 +110,8 @@ public sealed class PositionSystem : UpdateSystem
             ref var projectile = ref projectiles.GetComponent(i);
             ref var move = ref moves.GetComponent(i);
 
-            if (!position.IsInitialized)
-            {
-                position.Position = projectile.StartPosition;
-                position.IsInitialized = true;
-            }
-
             position.LastPosition = position.Position;
             position.Position += projectile.Direction.normalized * move.Speed * deltaTime;
-            // input.Direction = Vector2.zero;
         }
     }
 }

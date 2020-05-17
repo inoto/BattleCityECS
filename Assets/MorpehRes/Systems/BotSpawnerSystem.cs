@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Assets.MorpehRes.Data.Creator;
 using Morpeh;
 using SimpleBattleCity;
 using UnityEngine;
@@ -11,65 +12,40 @@ using UnityEngine.Analytics;
 [CreateAssetMenu(menuName = "ECS/Systems/" + nameof(BotSpawnerSystem))]
 public sealed class BotSpawnerSystem : UpdateSystem
 {
-    [SerializeField] List<GameObject> botTankPrefabs = new List<GameObject>();
-    [SerializeField] StageController stage;
     [SerializeField] int numberOfAliveAllowed;
+    [SerializeField] float rate = 5f;
+    [SerializeField] CreatorSystem creator;
 
     Filter fSpawners;
-
-    List<GameObject> aliveBots;
 
     public override void OnAwake()
     {
         fSpawners = World.Filter
-            .With<BotSpawnerComponent>()
+            .With<SpawnerComponent>()
             .With<PositionComponent>();
-
-        aliveBots = new List<GameObject>(5);
     }
 
     public override void OnUpdate(float deltaTime)
     {
-        // if (stage.NumberOfFastTanks)
-
-        CalculateLastTimes(deltaTime);
-
-        if (aliveBots.Count < numberOfAliveAllowed)
-            PrepareSpawn();
-    }
-
-    void CalculateLastTimes(float deltaTime)
-    {
         foreach (var entity in fSpawners)
         {
-            ref var spawner = ref entity.GetComponent<BotSpawnerComponent>();
+            ref var spawner = ref entity.GetComponent<SpawnerComponent>();
+            if (spawner.PlayerSpawner)
+                continue;
 
-            if (spawner.TimeSinceLastUse <= 10f)
-                spawner.TimeSinceLastUse += deltaTime;
-        }
-    }
+            ref var owner = ref entity.GetComponent<OwnerComponent>();
 
-    void PrepareSpawn()
-    {
-        float minTimeSinceLastUse = float.MinValue;
-        IEntity bestEntity = fSpawners.GetEntity(0);
-
-        foreach (var entity in fSpawners)
-        {
-            ref var spawner = ref entity.GetComponent<BotSpawnerComponent>();
-
-            if (spawner.TimeSinceLastUse > minTimeSinceLastUse)
+            if (spawner.Timer >= rate && spawner.NumberOfAlive < numberOfAliveAllowed)
             {
-                minTimeSinceLastUse = spawner.TimeSinceLastUse;
-                bestEntity = entity;
+                spawner.Timer = 0;
+                CreatorBotData data = new CreatorBotData();
+                data.Owner = owner.Player;
+                creator.Bots.Enqueue(data);
+                spawner.NumberOfAlive += 1;
             }
+
+            if (spawner.Timer <= rate)
+                spawner.Timer += deltaTime;
         }
-
-        ref var position = ref bestEntity.GetComponent<PositionComponent>();
-
-        GameObject go = Instantiate(botTankPrefabs[Random.Range(0, botTankPrefabs.Count - 1)]);
-        go.transform.position = position.Position;
-        aliveBots.Add(go);
-        // stage.NumberOfFastTanks -= 1;
     }
 }

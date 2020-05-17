@@ -29,10 +29,9 @@ public sealed class LastPositionSystem : UpdateSystem
 
             ref var position = ref positions.GetComponent(i);
 
-            if (collidable.Others.Count > 0)
+            if (collidable.Others.Count > 0 && position.IsInitialized)
             {
                 position.Position = position.LastPosition;
-                // Debug.Log($"collision returned to position {position.Position.ToString("F6")}");
             }
         }
     }

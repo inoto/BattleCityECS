@@ -12,3 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c02e31b0d6619841bba14e8ce2b8446, type: 3}
   m_Name: New Health System
   m_EditorClassIdentifier: 
+  creator: {fileID: 11400000, guid: d3e57c4fa9a9bb047830a447601c3109, type: 2}
+  gameController: {fileID: 0}

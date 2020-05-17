@@ -56,7 +56,7 @@ namespace Photon.Pun.Demo.Asteroids
         {
             foreach (Renderer r in GetComponentsInChildren<Renderer>())
             {
-                r.material.color = AsteroidsGame.GetColor(photonView.Owner.GetPlayerNumber());
+                r.material.color = AsteroidsPlayerData.GetColor(photonView.Owner.GetPlayerNumber());
             }
         }
 
@@ -115,7 +115,7 @@ namespace Photon.Pun.Demo.Asteroids
 
         private IEnumerator WaitForRespawn()
         {
-            yield return new WaitForSeconds(AsteroidsGame.PLAYER_RESPAWN_TIME);
+            yield return new WaitForSeconds(AsteroidsPlayerData.PLAYER_RESPAWN_TIME);
 
             photonView.RPC("RespawnSpaceship", RpcTarget.AllViaServer);
         }
@@ -141,9 +141,9 @@ namespace Photon.Pun.Demo.Asteroids
             if (photonView.IsMine)
             {
                 object lives;
-                if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(AsteroidsGame.PLAYER_LIVES, out lives))
+                if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(AsteroidsPlayerData.PLAYER_LIVES, out lives))
                 {
-                    PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable {{AsteroidsGame.PLAYER_LIVES, ((int) lives <= 1) ? 0 : ((int) lives - 1)}});
+                    PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable {{AsteroidsPlayerData.PLAYER_LIVES, ((int) lives <= 1) ? 0 : ((int) lives - 1)}});
 
                     if (((int) lives) > 1)
                     {

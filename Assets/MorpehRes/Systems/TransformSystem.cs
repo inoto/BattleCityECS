@@ -47,7 +47,7 @@ public sealed class TransformSystem : UpdateSystem
             ref var transform = ref transforms.GetComponent(i);
 
             transform.Transform.position = position.Position;
-            transform.Transform.rotation = DirectionToQuaternion(input.RotationDirection, -90);
+            transform.Transform.rotation = DirectionToQuaternion(input.RotationDirection);
         }
     }
 
@@ -64,7 +64,7 @@ public sealed class TransformSystem : UpdateSystem
             ref var transform = ref transforms.GetComponent(i);
 
             transform.Transform.position = position.Position;
-            transform.Transform.rotation = DirectionToQuaternion(bot.RotationDirection, 90);
+            transform.Transform.rotation = DirectionToQuaternion(bot.RotationDirection);
         }
     }
 
@@ -90,6 +90,4 @@ public sealed class TransformSystem : UpdateSystem
         var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         return Quaternion.AngleAxis(angle + spriteAngle, Vector3.forward);
     }
-
-    // get direction from sprite
 }

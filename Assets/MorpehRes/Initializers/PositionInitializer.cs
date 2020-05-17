@@ -29,6 +29,7 @@ public sealed class PositionInitializer : Initializer
             ref var position = ref positions.GetComponent(i);
 
             position.Position = transform.Transform.position;
+            position.IsInitialized = true;
         }
     }
 

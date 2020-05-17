@@ -1,4 +1,7 @@
-﻿using Morpeh;
+﻿using Assets.MorpehRes.Data.Creator;
+using Morpeh;
+using Photon.Pun;
+using SimpleBattleCity;
 using UnityEngine;
 using Unity.IL2CPP.CompilerServices;
 
@@ -6,8 +9,11 @@ using Unity.IL2CPP.CompilerServices;
 [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
 [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 [CreateAssetMenu(menuName = "ECS/Systems/" + nameof(HealthSystem))]
-public sealed class HealthSystem : UpdateSystem {
-    Filter fAll, fDamaged, fProjectiles;
+public sealed class HealthSystem : UpdateSystem
+{
+    [SerializeField] CreatorSystem creator;
+
+    Filter fAll, fDamaged, fProjectiles, fPlayers, fBots;
 
     public override void OnAwake()
     {
@@ -19,6 +25,16 @@ public sealed class HealthSystem : UpdateSystem {
             .With<HealthComponent>()
             .With<ProjectileComponent>()
             .With<CollidableComponent>();
+
+        fPlayers = World.Filter
+            .With<InputComponent>()
+            .With<HealthComponent>()
+            .With<OwnerComponent>();
+
+        fBots = World.Filter
+            .With<BotTankComponent>()
+            .With<HealthComponent>()
+            .With<OwnerComponent>();
 
         fDamaged = World.Filter
             .With<HealthComponent>()
@@ -35,38 +51,9 @@ public sealed class HealthSystem : UpdateSystem {
 
     public override void OnUpdate(float deltaTime)
     {
-        // CheckDamaged();
         CheckProjectiles();
-    }
-
-    void CheckDamaged()
-    {
-        foreach (var entity in fDamaged)
-        {
-            ref var health = ref entity.GetComponent<HealthComponent>();
-            ref var collidable = ref entity.GetComponent<CollidableComponent>();
-
-            Debug.Log("check damaged");
-            foreach (var other in collidable.Others)
-            {
-                // Debug.Log($"check {collidable.Collider.gameObject} with {other.gameObject}");
-                var provider = other.GetComponent<ProjectileProvider>();
-                if (provider == null)
-                    continue;
-                
-                var entityOther = provider.Entity;
-
-                if (entityOther.Has<ProjectileComponent>())
-                { 
-                    ref var projectile = ref entityOther.GetComponent<ProjectileComponent>();
-                    // Debug.Log("projectile damaged brick");
-                    if (projectile.Damage >= health.MinDamageToTrigger)
-                    {
-                        health.Health -= projectile.Damage;
-                    }
-                }
-            }
-        }
+        CheckPlayers();
+        CheckBots();
     }
 
     void CheckProjectiles()
@@ -85,14 +72,14 @@ public sealed class HealthSystem : UpdateSystem {
 
             foreach (var other in collidable.Others)
             {
-                // Debug.Log($"check {collidable.Collider.gameObject} with {other.gameObject}");
                 var provider = other.GetComponent<HealthProvider>();
                 if (provider == null)
                     continue;
 
                 ref var healthOther = ref provider.Entity.GetComponent<HealthComponent>();
 
-                if (projectile.Damage >= healthOther.MinDamageToTrigger)
+                if (projectile.Damage >= healthOther.MinDamageToTrigger
+                && !provider.Entity.Has<InvulnerableComponent>())
                 {
                     healthOther.Health -= projectile.Damage;
                 }
@@ -101,6 +88,57 @@ public sealed class HealthSystem : UpdateSystem {
             if (collidable.Others.Count > 0)
             {
                 health.Health = 0;
+            }
+        }
+    }
+
+    void CheckPlayers()
+    {
+        foreach (var entity in fPlayers)
+        {
+            ref var health = ref entity.GetComponent<HealthComponent>();
+            ref var owner = ref entity.GetComponent<OwnerComponent>();
+
+            if (!health.IsInitialized)
+            {
+                health.Health = health.HealthMax;
+                health.IsInitialized = true;
+            }
+
+            if (health.Health <= 0)
+            {
+                CreatorPlayerData data = new CreatorPlayerData();
+                data.Owner.Player = owner.Player;
+
+                creator.Players.Enqueue(data);
+
+                if (!PhotonNetwork.IsConnected)
+                {
+                    GameController.Instance.PlayerDiedSinglePlayer();
+                }
+            }
+        }
+    }
+
+    void CheckBots()
+    {
+        foreach (var entity in fBots)
+        {
+            ref var health = ref entity.GetComponent<HealthComponent>();
+            ref var owner = ref entity.GetComponent<OwnerComponent>();
+
+            if (!health.IsInitialized)
+            {
+                health.Health = health.HealthMax;
+                health.IsInitialized = true;
+            }
+
+            if (health.Health <= 0)
+            {
+                CreatorBotData data = new CreatorBotData();
+                data.Owner = owner.Player;
+
+                creator.Bots.Enqueue(data);
             }
         }
     }
