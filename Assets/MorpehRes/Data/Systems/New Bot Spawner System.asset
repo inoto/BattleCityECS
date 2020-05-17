@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ff2426ec58ce454ca08b86b825efe51, type: 3}
   m_Name: New Bot Spawner System
   m_EditorClassIdentifier: 
-  numberOfAliveAllowed: 5
-  rate: 5
+  numberOfAliveAllowed: 2
+  rate: 2
   creator: {fileID: 11400000, guid: d3e57c4fa9a9bb047830a447601c3109, type: 2}

@@ -13,5 +13,5 @@ public struct BotTankComponent : IComponent
     public float RotateChance;
     public float FireChance;
     public bool Fired;
-    public bool WithBonus;
+    public float CollidedTimer;
 }

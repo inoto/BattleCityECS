@@ -13,4 +13,3 @@ MonoBehaviour:
   m_Name: New Health System
   m_EditorClassIdentifier: 
   creator: {fileID: 11400000, guid: d3e57c4fa9a9bb047830a447601c3109, type: 2}
-  gameController: {fileID: 0}

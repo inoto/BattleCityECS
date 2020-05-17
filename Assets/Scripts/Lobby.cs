@@ -26,7 +26,7 @@ namespace SimpleBattleCity
 
         public void StartSingleGame()
         {
-            SceneManager.LoadScene("Stage1");
+            SceneManager.LoadScene(1);
         }
 
         public void StartMultiPlayer()
@@ -83,7 +83,7 @@ namespace SimpleBattleCity
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.CurrentRoom.IsVisible = false;
 
-            PhotonNetwork.LoadLevel("Stage1");
+            PhotonNetwork.LoadLevel(1);
         }
 
         #endregion

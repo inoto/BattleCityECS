@@ -119,7 +119,7 @@ namespace SimpleBattleCity
             }
             else
             {
-                SceneManager.LoadScene("Lobby");
+                SceneManager.LoadScene(0);
             }
         }
 
@@ -129,7 +129,7 @@ namespace SimpleBattleCity
 
         public override void OnDisconnected(DisconnectCause cause)
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Lobby");
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
         }
 
         public override void OnLeftRoom()

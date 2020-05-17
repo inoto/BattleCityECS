@@ -8,11 +8,8 @@ namespace SimpleBattleCity
 
         Camera _camera;
 
-        // [ExecuteInEditMode]
         void Awake()
         {
-            // Debug.Log("Editor causes this Awake");
-
             _camera = GetComponent<Camera>();
             Field = GameObject.Find("Field").GetComponent<SpriteRenderer>();
             if (Field == null)

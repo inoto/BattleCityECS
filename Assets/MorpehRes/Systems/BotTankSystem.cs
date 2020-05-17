@@ -1,4 +1,5 @@
-﻿using Morpeh;
+﻿using System.Collections.Generic;
+using Morpeh;
 using UnityEngine;
 using Unity.IL2CPP.CompilerServices;
 
@@ -44,83 +45,45 @@ public sealed class BotTankSystem : UpdateSystem
                     bot.Fired = true;
             }
 
-            Vector2 eaglePosition;
-            var ownerSositions = fEagles.Select<PositionComponent>();
-            var eagleOwners = fEagles.Select<OwnerComponent>();
-            for (int j = 0; j < fEagles.Length; j++)
-            {
-                ref var eagleOwner = ref eagleOwners.GetComponent(j);
-                if (eagleOwner.Player == owner.Player)
-                    continue;
+            // Vector2 eaglePosition;
+            // var ownerSositions = fEagles.Select<PositionComponent>();
+            // var eagleOwners = fEagles.Select<OwnerComponent>();
+            // for (int j = 0; j < fEagles.Length; j++)
+            // {
+            //     ref var eagleOwner = ref eagleOwners.GetComponent(j);
+            //     if (eagleOwner.Player == owner.Player)
+            //         continue;
+            //
+            //     ref var ownerPosition = ref ownerSositions.GetComponent(j);
+            //     eaglePosition = ownerPosition.Position;
+            // }
 
-                ref var ownerPosition = ref ownerSositions.GetComponent(j);
-                eaglePosition = ownerPosition.Position;
-            }
-
-            if (collidable.Others.Count > 0)
+            if (collidable.Others.Count > 0 && !collidable.Others.Contains(null)
+                && bot.CollidedTimer > 1f)
             {
-                if (bot.RotationDirection == Vector2.zero)
-                {
-                    bot.Direction = Vector2.down;
-                }
-                else if (bot.RotationDirection == Vector2.down)
-                {
-                    bot.Direction = Vector2.left;
-                }
-                else if (bot.RotationDirection == Vector2.left)
-                {
-                    bot.Direction = Vector2.up;
-                }
-                else if (bot.RotationDirection == Vector2.up)
-                {
-                    bot.Direction = Vector2.right;
-                }
-                else if (bot.RotationDirection == Vector2.right)
-                {
-                    bot.Direction = Vector2.down;
-                }
+                bot.CollidedTimer = 0f;
+                bot.Direction = RandomDirectionButNot(-bot.Direction);
                 bot.RotationDirection = bot.Direction;
             }
             if (bot.RotateChance > 0f && Random.Range(0, 100) < bot.RotateChance * 100)
             {
-                // if (bot.RotationDirection == Vector2.zero)
-                // {
-                var randValue = Random.Range(0, 3);
-                if (randValue == 0)
-                {
-                    bot.Direction = Vector2.up;
-                }
-                else if (randValue == 1)
-                {
-                    bot.Direction = Vector2.left;
-                }
-                else if (randValue == 2)
-                {
-                    bot.Direction = Vector2.down;
-                }
-                else if (randValue == 3)
-                {
-                    bot.Direction = Vector2.right;
-                }
-                // }
-                // else if (bot.RotationDirection == Vector2.down)
-                // {
-                //     bot.Direction = Random.Range(0, 1) == 0 ? Vector2.left : Vector2.right;
-                // }
-                // else if (bot.RotationDirection == Vector2.left)
-                // {
-                //     bot.Direction = Random.Range(0, 1) == 0 ? Vector2.down : Vector2.up;
-                // }
-                // else if (bot.RotationDirection == Vector2.up)
-                // {
-                //     bot.Direction = Random.Range(0, 1) == 0 ? Vector2.left : Vector2.right;
-                // }
-                // else if (bot.RotationDirection == Vector2.right)
-                // {
-                //     bot.Direction = Random.Range(0, 1) == 0 ? Vector2.down : Vector2.up;
-                // }
+                bot.Direction = RandomDirectionButNot(-bot.Direction);
                 bot.RotationDirection = bot.Direction;
             }
+
+            bot.CollidedTimer += deltaTime;
         }
+    }
+
+    Vector2 RandomDirectionButNot(Vector2 dir)
+    {
+        List<Vector2> allPossible = new List<Vector2>(4);
+        allPossible.Add(Vector2.up);
+        allPossible.Add(Vector2.down);
+        allPossible.Add(Vector2.left);
+        allPossible.Add(Vector2.right);
+        allPossible.Remove(dir);
+
+        return allPossible[Random.Range(0, 2)];
     }
 }

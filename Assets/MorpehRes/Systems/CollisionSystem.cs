@@ -12,7 +12,7 @@ using Unity.IL2CPP.CompilerServices;
 public sealed class CollisionSystem : UpdateSystem
 {
     Filter fAll, fPlayerTank, fHealth, fBlocker, fProjectiles, fSpawners;
-    Filter fBlockerProjectileAndOwner, fBlockerProjectilesEnvironment, fForest, fBlockerTank, fEagle, fBots;
+    Filter fBlockerProjectile, fBlockerProjectilesEnvironment, fForest, fBlockerTank, fEagle, fBots;
 
     public override void OnAwake()
     {
@@ -36,7 +36,7 @@ public sealed class CollisionSystem : UpdateSystem
             .With<ProjectileComponent>()
             .With<HealthComponent>();
 
-        fBlockerProjectileAndOwner = World.Filter
+        fBlockerProjectile = World.Filter
             .With<CollidableComponent>()
             .With<BlockerProjectileComponent>()
             .With<OwnerComponent>();
@@ -154,7 +154,7 @@ public sealed class CollisionSystem : UpdateSystem
             ref var projectile = ref entity.GetComponent<ProjectileComponent>();
             ref var owner = ref entity.GetComponent<OwnerComponent>();
 
-            foreach (var entityOther in fBlockerProjectileAndOwner)
+            foreach (var entityOther in fBlockerProjectile)
             {
                 if (entity.ID == entityOther.ID)
                     continue;
@@ -164,14 +164,14 @@ public sealed class CollisionSystem : UpdateSystem
 
                 if (collidable.Collider.Bounds.Intersects(other.Collider.Bounds))
                 {
-                    if (!collidable.Others.Contains(other.Collider) && owner.Player != otherOwner.Player)
+                    if (!collidable.Others.Contains(other.Collider))
                     {
                         collidable.Others.Add(other.Collider);
                     }
                 }
                 else
                 {
-                    if (collidable.Others.Contains(other.Collider) && owner.Player != otherOwner.Player)
+                    if (collidable.Others.Contains(other.Collider))
                     {
                         collidable.Others.Remove(other.Collider);
                     }

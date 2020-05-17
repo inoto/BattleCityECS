@@ -63,6 +63,7 @@ public sealed class HealthSystem : UpdateSystem
             ref var health = ref entity.GetComponent<HealthComponent>();
             ref var projectile = ref entity.GetComponent<ProjectileComponent>();
             ref var collidable = ref entity.GetComponent<CollidableComponent>();
+            ref var owner = ref entity.GetComponent<OwnerComponent>();
 
             if (!health.IsInitialized)
             {
@@ -76,10 +77,17 @@ public sealed class HealthSystem : UpdateSystem
                 if (provider == null)
                     continue;
 
+                if (provider.Entity.Has<OwnerComponent>())
+                {
+                    ref var ownerOther = ref provider.Entity.GetComponent<OwnerComponent>();
+                    if (owner.Player == ownerOther.Player)
+                        continue;
+                }
+
                 ref var healthOther = ref provider.Entity.GetComponent<HealthComponent>();
 
                 if (projectile.Damage >= healthOther.MinDamageToTrigger
-                && !provider.Entity.Has<InvulnerableComponent>())
+                    && !provider.Entity.Has<InvulnerableComponent>())
                 {
                     healthOther.Health -= projectile.Damage;
                 }

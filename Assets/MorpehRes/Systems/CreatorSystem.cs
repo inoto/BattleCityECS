@@ -55,7 +55,7 @@ public sealed class CreatorSystem : UpdateSystem
         {
             var data = Projectiles.Dequeue();
 
-            GameObject go = SpawnPrefab(ProjectilePrefab, data.Projectile.StartPosition);
+            GameObject go = SpawnPrefab(ProjectilePrefab, Vector2.zero);
 
             var newEntity = go.GetComponent<ProjectileProvider>().Entity;
 
@@ -64,6 +64,8 @@ public sealed class CreatorSystem : UpdateSystem
 
             ref var projectileOwner = ref newEntity.GetComponent<OwnerComponent>();
             projectileOwner.Player = data.Owner.Player;
+
+            go.transform.position = data.Projectile.StartPosition + projectile.Direction*1.8f;
         }
     }
 
@@ -137,7 +139,8 @@ public sealed class CreatorSystem : UpdateSystem
                 owner.Player = data.Owner;
 
                 ref var bot = ref newEntity.GetComponent<BotTankComponent>();
-                bot.RotationDirection = data.Owner == 1 ? Vector2.up : Vector2.down;
+                bot.Direction = data.Owner == 1 ? Vector2.up : Vector2.down;
+                bot.RotationDirection = bot.Direction;
 
                 Bots.Dequeue();
             }
